@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas Online Python Compiler</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #0f0f0f;
+            color: #00ff00;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: #1b1b1b;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center.
+        }
+
+        header h1 {
+            margin: 0;
+            color: #00ff00.
+        }
+
+        .about a {
+            color: #00ff00;
+            text-decoration: none.
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px.
+        }
+
+        .editor {
+            flex: 2;
+            border: 1px solid #00ff00;
+            background-color: #0f0f0f;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #00ff00.
+        }
+
+        #monaco-editor {
+            width: 100%;
+            height: 400px;
+            background-color: #0f0f0f.
+        }
+
+        .terminal {
+            flex: 1;
+            border: 1px solid #00ff00;
+            background-color: #0f0f0f;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            color: #00ff00.
+        }
+
+        .input-area {
+            margin-top: 20px.
+        }
+
+        .input-area textarea {
+            width: 100%;
+            height: 100px;
+            background-color: #0f0f0f;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 10px;
+            box-sizing: border-box;
+            font-size: 16px.
+        }
+
+        button {
+            background-color: #00ff00;
+            color: #0f0f0f;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            display: block;
+            margin: 20px 0.
+        }
+
+        button:hover {
+            background-color: #00cc00.
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/4.12.0/xterm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.28.1/min/vs/loader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/4.12.0/xterm.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Atlas Online Python Compiler</h1>
+        <div class="about">
+            <a href="/about">About Us</a>
+        </div>
+    </header>
+    <div class="container">
+        <div class="editor">
+            <h2>Code Editor</h2>
+            <div id="monaco-editor"></div>
+            <button onclick="runCode()">Run Code</button>
+        </div>
+        <div class="terminal">
+            <h2>Terminal</h2>
+            <div id="terminal"></div>
+            <div class="input-area">
+                <h3>Input</h3>
+                <textarea id="input" placeholder="Enter input here..."></textarea>
+            </div>
+        </div>
+    </div>
+    <footer>
+        © M.Deena | Email: deenam167@gmail.com
+    </footer>
+
+    <script>
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.28.1/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            var editor = monaco.editor.create(document.getElementById('monaco-editor'), {
+                value: '# Write your Python code here...\n',
+                language: 'python',
+                theme: 'vs-dark',
+                automaticLayout: true
+            });
+
+            window.runCode = function() {
+                var code = editor.getValue();
+                var input = document.getElementById("input").value;
+                document.getElementById("terminal").innerText = "Running...\n";
+
+                fetch('/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: code, input: input })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("terminal").innerText = data.output;
+                })
+                .catch(error => {
+                    document.getElementById("terminal").innerText = "Error: " + error;
+                });
+            };
+        });
+
+        var term = new Terminal();
+        term.open(document.getElementById('terminal'));
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
